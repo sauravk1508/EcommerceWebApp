@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Admin</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+
+    <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" crossorigin="anonymous"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+
+    <link href="css/index-styles.css" rel="stylesheet" />
+    <th:block th:replace="allcss.html"></th:block>
+
+</head>
+
+<body>
+    <div th:replace="navbar.html"></div>
+
+    <div class="container mt-5">
+        <h2 class="text-center mb-4" th:text="${product.id != null} ? 'Edit Product' : 'Add Product'"></h2>
+
+        <form th:action="${product.id != null} ? @{/products/edit/{id}(id=${product.id})} : @{/products/add}" method="post" th:object="${product}" enctype="multipart/form-data">
+            <input type="hidden" th:field="*{id}" /> <!-- Ensure the ID is passed -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="name" class="form-label">Name:</label>
+                    <input type="text" class="form-control" th:field="*{name}" placeholder="Product Name" required />
+                </div>
+                <div class="col-md-6">
+                    <label for="description" class="form-label">Description:</label>
+                    <input type="text" class="form-control" th:field="*{description}" placeholder="Add product description" required />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="brand" class="form-label">Brand:</label>
+                    <input type="text" class="form-control" th:field="*{brand}" placeholder="Enter your Brand" required />
+                </div>
+                <div class="col-md-6">
+                    <label for="price" class="form-label">Price:</label>
+                    <input type="number" class="form-control" th:field="*{price}" placeholder="Eg: $1000" step="0.01" required />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Category:</label>
+                    <select class="form-select" th:field="*{category}" required>
+                        <option value="">Select category</option>
+                        <option value="Laptop">Laptop</option>
+                        <option value="Headphone">Headphone</option>
+                        <option value="Mobile">Mobile</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Toys">Toys</option>
+                        <option value="Fashion">Fashion</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="releaseDate" class="form-label">Release Date:</label>
+                    <input type="date" class="form-control" th:field="*{releaseDate}" required />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="quantity" class="form-label">Stock Quantity:</label>
+                    <input type="number" class="form-control" th:field="*{quantity}" placeholder="Enter quantity" min="0" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Image:</label>
+                    <input type="file" class="form-control" name="imageFile" required />
+                </div> 
+            </div>
+
+            <div class="col-12">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" th:field="*{available}" id="gridCheck" />
+                    <label class="form-check-label" for="gridCheck">Product Available</label>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+
+</body>
+
+</html>

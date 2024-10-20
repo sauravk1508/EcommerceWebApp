@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="Login page for the ecommerce application" />
+    <meta name="author" content="Saurav Kumar" />
+    <title>Login</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+
+    <!-- Font Awesome for icons -->
+    <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" crossorigin="anonymous"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+
+    <!-- Custom CSS -->
+    <link th:href="@{/css/login.css}" rel="stylesheet" />
+
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="title">Register</div>
+          <!-- Show success or error messages -->
+        <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+        <form th:action="@{/register}" method="post" th:object="${user}">
+         <!-- Display error message -->
+            
+            
+            <div class="field">
+                <input type="text" th:field="*{username}" required />
+                <label for="username">Username</label>
+            </div>
+            <div class="field">
+                <input type="password" th:field="*{password}" required />
+                <label for="password">Password</label>
+            </div>
+            <div class="field">
+                <input type="password"  required />
+                <label for="password">Re-Password</label>
+            </div>
+            <div class="field">
+                <input type="submit" value="Register" />
+            </div>
+            <div class="signup-link">
+                Already a member? <a th:href="@{/login}">Login</a>
+            </div>
+            
+            
+        </form>
+    </div>
+</body>
+</html>
+
