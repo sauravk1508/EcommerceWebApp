@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="utf-8" />
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="description" content="" />
+<meta name="author" content="" />
+<title>Admin - Shopping Cart</title>
+
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" th:href="@{/css/cart.css}" />
+<div th:insert="~{allcss.html}"></div>
+<!-- Include Bootstrap from CDN for quick testing -->
+<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+</head>
+
+<body>
+	<div th:insert="~{navbar.html}"></div>
+	<div class="container mt-5 p-3 rounded cart bg-light">
+		<div class="col-md-8 mx-auto">
+			<div class="product-details">
+				<h6 class="mb-4 text-center">Shopping Cart</h6>
+				<div class="d-flex justify-content-between mb-3">
+					<span
+						th:text="'You have ' + ${cartItems.size()} + ' items in your cart'"
+						class="font-weight-bold"></span>
+				</div>
+
+				<!-- Cart Items Loop -->
+				<div th:each="item : ${cartItems}"
+					class="d-flex justify-content-between align-items-center mt-3 p-3 items rounded border shadow-sm bg-white">
+					<div class="d-flex flex-row cart-item">
+						<!-- Product Image -->
+						<img th:src="@{${item.product.imagePath}}" 
+                     alt="Product Image" class="card-img-top img-fluid" />
+
+
+						<!-- Product Name and Description -->
+						<div class="ml-2">
+							<span class="font-weight-bold d-block"
+								th:text="${item.product.name}"></span> <span class="spec"
+								th:text="${item.product.description}"></span>
+						</div>
+					</div>
+					<div class="d-flex flex-row align-items-center">
+						<span class="d-block font-weight-bold" th:text="${item.quantity}"></span>
+						<span class="d-block ml-3 font-weight-bold text-success"
+							th:text="${item.product.price * item.quantity}"></span>
+						<form th:action="@{/cart/remove}" method="post" class="ml-3">
+							<input type="hidden" name="cartItemId" th:value="${item.id}" />
+							<button type="submit" class="btn btn-link text-danger">
+								<img th:src="@{/images/remove.png}" alt="Remove Item"
+									style="width: 20px; height: 20px;" />
+							</button>
+						</form>
+					</div>
+				</div>
+
+				<!-- Total Amount Display -->
+				<!-- Total Amount Display -->
+				<div class="total-amount-container">
+					<span class="total-amount-label">Total Amount:</span> <span
+						class="total-amount-value" th:text="${totalAmount}"></span>
+				</div>
+
+
+
+			</div>
+		</div>
+	</div>
+
+</body>
+
+</html>

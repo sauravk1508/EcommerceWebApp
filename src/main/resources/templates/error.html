@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Error - Admin</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+
+    <div th:insert="~{allcss.html}"></div>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+            text-align: center;
+           
+        }
+        .error-container {
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+            margin-top: 60px;
+        }
+        .error-title {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #dc3545; /* Bootstrap danger color */
+        }
+        .error-message {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .error-details {
+            font-size: 0.9em;
+            color: #6c757d; /* Bootstrap secondary color */
+            white-space: pre-wrap; /* Preserve whitespace */
+            margin-top: 10px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            color: white;
+            background-color: #007bff; /* Bootstrap primary color */
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            background-color: #0056b3; /* Darker shade of primary */
+        }
+    </style>
+</head>
+
+<body>
+    <div th:insert="~{navbar.html}"></div>
+    <div class="error-container">
+        <h1 class="error-title">An Error Occurred</h1>
+        <p class="error-message" th:text="${error}">Error details will appear here.</p>
+        <p class="error-details" th:text="${details}">More specific details about the error.</p>
+        <a th:href="@{/admin/products}" class="back-link">Go Back to Product List</a>
+    </div>
+</body>
+</html>
