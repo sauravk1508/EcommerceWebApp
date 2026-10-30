@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Admin - Brand List</title>
+    <script src="/dwr/engine.js"></script>
+    <script src="/dwr/util.js"></script>
+    <script src="/dwr/interface/adminController.js"></script>
+    <script th:src="@{/js/brand.js}"></script>
+</head>
+<body>
+	<div th:insert="~{allcss.html}"></div>
+	<div class="container mt-5">
+		<h2 class="text-center"> All Brands</h2>
+		<table class="table table-striped table-hover">
+		  <thead>
+		    <tr>
+		      <th scope="col">#</th>
+		      <th scope="col">Brand Name</th>
+		      <th scope="col">Description</th>
+		      <th scope="col">Mapped Sub-Categories</th>
+		      <th scope="col">Action</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    <tr th:each="brand, iterStat : ${prodBrandList}" th:value="${brand.id}">
+		      <th scope="row" th:text="${iterStat.index + 1}"></th>
+		      <td th:text="${brand.name}"></td>
+		      <td style="width : 100%; max-width: 50%;" th:text="${brand.description}"></td>
+		      <td><ul><li style="display: list-item; white-space: nowrap;" th:each="subCat : ${brand.subCategory}" th:text="${subCat.name}"></li></ul></td>
+		      <td><a th:href="@{/admin/products/editBrandInput/{brandId}(brandId=${brand.id})}" th:value="${brand.id}" class="btn btn-info"><i class="fas fa-edit"></i> Edit</a>
+		      	<button id="deleteCategory" onClick="deleteBrand(this);" class="btn btn-danger" th:value="${brand.id}"><i class="fa-solid fa-trash"></i> Delete</button>
+		      </td>
+		    </tr>
+		  </tbody>
+		</table>
+	</div>
+</body>
+</html>

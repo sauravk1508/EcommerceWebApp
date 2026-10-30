@@ -1,0 +1,115 @@
+  /* General Styles */
+        body {
+            background-color: #f1f3f5; /* Light gray background for a soft look */
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #343a40;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Card Styles */
+        .card {
+            border: none;
+            border-radius: 15px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-img-top {
+            max-height: 200px;
+            object-fit: cover; /* Maintain aspect ratio while covering the area */
+            transition: transform 0.3s ease;
+            border-bottom: 2px solid #007bff; /* Underline effect */
+        }
+
+        .card:hover .card-img-top {
+            transform: scale(1.05); /* Zoom in on image on hover */
+        }
+
+        .card-title {
+            color: #495057;
+            font-size: 1.5rem;
+            margin: 15px 0 5px 0;
+        }
+
+        .card-text {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        /* Button Styles */
+        .button-container {
+            display: flex;
+            justify-content: space-between; /* Space out buttons */
+            width: 100%; /* Full width to ensure alignment */
+            margin-top: 15px; /* Margin for spacing */
+        }
+
+        .btn {
+            font-size: 14px;
+            padding: 10px 20px;
+            border-radius: 25px; /* Rounded buttons for modern look */
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            flex: 1; /* Make buttons take equal space */
+            margin: 0 5px; /* Space between buttons */
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive layout for different screen sizes */
+        .col-12.col-sm-6.col-md-4 {
+            padding: 10px;
+        }
+
+        @media (min-width: 992px) {
+            .card {
+                min-height: 350px; /* Adjust height for larger screens */
+            }
+        }
+        
+        
+ 

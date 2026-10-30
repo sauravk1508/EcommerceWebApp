@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Admin - Add/Edit Brand</title>
+    <script src="/dwr/engine.js"></script>
+    <script src="/dwr/util.js"></script>
+    <script src="/dwr/interface/adminController.js"></script>
+    <script th:src="@{/js/brand.js}"></script>
+</head>
+<body>
+<div th:insert="~{allcss.html}"></div>
+	<div class="container mt-5">
+        <h2 class="text-center" th:text="${brand.id != null} ? 'Edit Product Brand' : 'Add Product Brand'"></h2>
+            <input type="hidden" th:field="*{brand.id}" /> 
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="name" class="form-label">Name:</label>
+                    <input type="text" id ="brandName" class="form-control" th:field="*{brand.name}" placeholder="Brand Name" required />
+                </div>
+                <div class="col-md-6">
+                    <label for="description" class="form-label">Description:</label>
+                    <input type="text" id = "brandDesc" class="form-control" th:field="*{brand.description}"  placeholder="Add Brand Description" required />
+                </div>
+                <div class="col-md-6">
+                    <label for="brand" class="form-label">Product Sub Category:</label>
+                     <select class="form-select" multiple th:field="*{brand.subCategory}" id = "prodSubCategory" required>
+                        <option th:each="subCategory : ${prodSubCategory}" th:value="${subCategory.id}" th:text="${subCategory.name}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center">
+                <button type="submit" th:onclick="'saveBrand(' + (${brand.id} != null ? 'true' : 'false') + ');'" class="btn btn-primary">Save</button>
+            </div>
+    </div>
+
+</body>
+
+</html>

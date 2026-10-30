@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<title>Admin Dashboard</title>
+
+<link rel="stylesheet" th:href="@{/css/allProducts.css}" />
+<div th:insert="~{allcss.html}"></div>
+
+<style>
+/* Container and card adjustments for consistency */
+.container {
+	max-width: 1200px;
+	margin: auto;
+}
+
+.card {
+	height: 100%; /* Allows card to take full height of the column */
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.card h5, .card p, .card h6 {
+	text-align: center;
+}
+
+.card .card-img-top {
+	max-height: 200px;
+	object-fit: contain;
+}
+
+.card-body {
+	flex-grow: 1;
+}
+
+.card-body, .list-group, .text-center {
+	padding: 10px;
+}
+/* Responsive layout for different screen sizes */
+.col-12.col-sm-6.col-md-4 {
+	padding: 10px;
+}
+
+@media ( min-width : 992px) {
+	.card {
+		min-height: 500px;
+	}
+}
+</style>
+</head>
+<body>
+<main class="container">
+    <h2 th:text="${categoryName != null} ? ${categoryName} : 'Product List'"></h2>
+    <div class="row d-flex justify-content-around">
+        <!-- Loop through the products and display them -->
+        <div th:each="product : ${products}" class="col-12 col-sm-6 col-md-4 mb-4">
+            <div class="card h-100">
+                <!-- Use the image path  -->
+                <img th:src="@{${product.imageDetails != null} ? ${product.imageDetails.path} : ''}"  alt="Product Image"  class="card-img-top img-fluid" />
+
+                <div class="card-body text-center">
+                    <h5 class="card-title" th:text="${product.name}"></h5>
+                    <p class="card-text" th:text="${product.description}"></p>
+                    <p class="card-text"><strong th:text="${product.price}"></strong></p>
+                    <p class="card-text" th:text="${product.available ? 'Available' : 'Out of Stock'}"></p>
+                </div>
+                <div class="card-body text-center">
+                    <a th:href="@{/admin/products/{categoryId}/{productId}(categoryId=${product.subCategory.productCategory.id},productId=${product.id})}"
+                       class="btn btn-primary">View</a>
+                    <a th:href="@{/admin/products/edit/{id}(id=${product.id})}"
+                       class="btn btn-primary">Edit</a>
+                    <a th:href="@{/admin/products/{id}(id=${product.id})}"
+                       class="btn btn-danger">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>
