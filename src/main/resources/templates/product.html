@@ -7,18 +7,17 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
     <title>Admin - Add/Edit Product</title>
+    <script src="/dwr/engine.js"></script>
+    <script src="/dwr/util.js"></script>
+    <script src="/dwr/interface/adminController.js"></script>
 
    <link rel="stylesheet" th:href="@{/css/addProduct.css}" />
+   <script th:src="@{/js/product.js}"></script>
     <div th:insert="~{allcss.html}"></div>
 
-   
-    <style>
-      
-    </style>
 </head>
 
 <body>
-    <div th:insert="~{navbar.html}"></div>
 
     <div class="container mt-5">
         <h2 class="text-center" th:text="${product.id != null} ? 'Edit Product' : 'Add Product'"></h2>
@@ -40,7 +39,10 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="brand" class="form-label">Brand:</label>
-                    <input type="text" class="form-control" th:field="*{brand}" placeholder="Enter your Brand" required />
+                     <select class="form-select" id="brand" th:field="*{brand}" required onchange="getSubCategory(this)">
+                        <option value="" selected>Select Brand</option>
+                        <option th:each="brand : ${brandList}" th:value="${brand.id}" th:text="${brand.name}"> </option>
+                    </select>
                 </div>
                 <div class="col-md-6">
                     <label for="price" class="form-label">Price:</label>
@@ -49,32 +51,46 @@
             </div>
 
             <div class="row mb-3">
-                <div class="col-md-6">
-                    <label class="form-label">Category:</label>
-                    <select class="form-select" th:field="*{category}" required>
-                        <option value="">Select category</option>
-                        <option value="Laptop">Laptop</option>
-                        <option value="Headphone">Headphone</option>
-                        <option value="Mobile">Mobile</option>
-                        <option value="Electronics">Electronics</option>
-                        <option value="Toys">Toys</option>
-                        <option value="Fashion">Fashion</option>
-                    </select>
+            <div class="col-md-6">
+            	<label for="brand" class="form-label">Sub Category:</label>
+                <select class="form-select" id="subCategory" th:field="*{subCategory}" disabled required onchange="getCategory(this)">
+                   <option value='' selected>Select Sub Category</option>
+                   <!-- <option th:each="subCategory : ${subCategoryList}" th:value="${subCategory.id}" th:text="${subCategory.name}"> </option> -->
+                </select>
+                <input type="hidden" id="prodSubCategoryId" th:field="*{subCategory}" th:value="${subCategory}" />
+
                 </div>
                 <div class="col-md-6">
-                    <label for="releaseDate" class="form-label">Release Date:</label>
-                    <input type="date" class="form-control" th:field="*{releaseDate}" required />
+                    <label class="form-label">Category:</label>
+                    <input type="hidden" id= "categoryId" name="categoryId" value="">
+                    <input type="text" class="form-control" id= "prodCategory" placeholder="First Select Brand" disabled/>
+                </div>
+                
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Color:</label>
+                      <input type="text" class="form-control" th:field="*{color}" placeholder="eg: Red" />
+                </div>
+                <div class="col-md-6">
+                    <label for="size" class="form-label">Size:</label>
+                    <input type="text" class="form-control" th:field="*{size}" placeholder="eg: 34 or XL" />
                 </div>
             </div>
 
             <div class="row mb-3">
+            	<div class="col-md-6">
+                    <label for="releaseDate" class="form-label">Release Date:</label>
+                    <input type="date" class="form-control" th:field="*{releaseDate}" required />
+                </div>
                 <div class="col-md-6">
                     <label for="quantity" class="form-label">Stock Quantity:</label>
                     <input type="number" class="form-control" th:field="*{quantity}" placeholder="Enter quantity" min="0" required />
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Image:</label>
-                    <input type="file" class="form-control" name="imageFile" th:field="*{imageName}" required />
+                    <!-- <input type="file" class="form-control" name="imageFile" th:field="*{imageDetails.name}" required /> -->
+                	 <input type="file" class="form-control"  name="imageFile" accept="image/*" />
                 </div> 
             </div>
 

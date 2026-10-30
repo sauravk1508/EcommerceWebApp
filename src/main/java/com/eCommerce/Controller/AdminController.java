@@ -5,10 +5,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
+import javax.validation.ConstraintViolationException;
+
+import org.directwebremoting.annotations.RemoteMethod;
+import org.directwebremoting.annotations.RemoteProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -24,9 +29,14 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.eCommerce.Entity.Brand;
+import com.eCommerce.Entity.ImageDetails;
 import com.eCommerce.Entity.Product;
+import com.eCommerce.Entity.ProductCategory;
+import com.eCommerce.Entity.ProductSubCategory;
 import com.eCommerce.Service.ProductService;
 
+@RemoteProxy(name = "adminController")
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -47,13 +57,15 @@ public class AdminController {
     // Method to show the form for adding a product
     @GetMapping("/products/add")
     public String showAddProductForm(Model model) {
+    	List<Brand> brandList = productService.findAllBrands();
+    	model.addAttribute("brandList", brandList);
         model.addAttribute("product", new Product());
         return "product"; // Return the view name for adding a product
     }
 
     @PostMapping("/products/add")
     public String addProduct(@ModelAttribute Product product,
-                             @RequestParam MultipartFile imageFile, RedirectAttributes redirectAttributes) {
+                             @RequestParam("imageFile") MultipartFile imageFile, RedirectAttributes redirectAttributes) {
         try {
             String uploadDir = "src/main/resources/static/uploads/";
             File uploadDirFile = new File(uploadDir);
@@ -76,12 +88,16 @@ public class AdminController {
                 Path filePath = Paths.get(uploadDir + imageFileName);
                 Files.copy(imageFile.getInputStream(), filePath);
             }
+            ImageDetails imageObj = new ImageDetails();
 
             // Save image details in product
-            product.setImageName(imageFileName);
-            product.setImageType(imageFile.getContentType());
-            product.setImagePath(relativeImagePath); // Store the relative path
-
+            imageObj.setName(imageFileName);
+            imageObj.setType(imageFile.getContentType());
+            imageObj.setPath(relativeImagePath); // Store the relative path
+            
+            productService.saveImageDetails(imageObj);
+            product.generateProductNumber();
+            product.setImageDetails(imageObj);
             // Save the product details in the database
             productService.saveProduct(product);
             redirectAttributes.addFlashAttribute("success", "Product added successfully.");
@@ -91,6 +107,7 @@ public class AdminController {
             e.printStackTrace();
             throw new RuntimeException("Error while saving the product image: " + e.getMessage(), e);
         } catch (Exception e) {
+        	e.printStackTrace();
             throw new RuntimeException("Error while adding the product: " + e.getMessage(), e);
         }
     }
@@ -98,8 +115,10 @@ public class AdminController {
 
     // Method to show the edit form for a product
     @GetMapping("/products/edit/{id}")
-    public String showEditProductForm(@PathVariable("id") Integer idd, Model model) {
+    public String showEditProductForm(@PathVariable("id") Long idd, Model model) {
         Product product = productService.getProductById(idd);
+        List<Brand> brandList = productService.findAllBrands();
+    	model.addAttribute("brandList", brandList);
         if (product != null) {
             model.addAttribute("product", product);
             return "product"; // Return the view name for editing a product
@@ -110,7 +129,7 @@ public class AdminController {
     }
 
     @PostMapping("/products/edit/{id}")
-    public String editProduct(@PathVariable Integer id, @ModelAttribute Product product,
+    public String editProduct(@PathVariable Long id, @ModelAttribute Product product,
                               @RequestParam MultipartFile imageFile, RedirectAttributes redirectAttributes) {
         try {
             String uploadDir = "src/main/resources/static/uploads/";
@@ -135,20 +154,18 @@ public class AdminController {
                     Path filePath = Paths.get(uploadDir + imageFileName);
                     Files.copy(imageFile.getInputStream(), filePath);
                 }
-
+                ImageDetails imageObj = new ImageDetails();
+                imageObj.setName(imageFileName);
+                imageObj.setType(imageFile.getContentType());
+                imageObj.setPath(relativeImagePath); 
+                productService.saveImageDetails(imageObj);
+                product.setImageDetails(imageObj);
                 // Save the new image details in the product
-                product.setImageName(imageFileName);
-                product.setImageType(imageFile.getContentType());
-                product.setImagePath(relativeImagePath);
-            } else {
-                // Retain existing image data if no new image is uploaded
-                product.setImageName(existingProduct.getImageName());
-                product.setImageType(existingProduct.getImageType());
-                product.setImagePath(existingProduct.getImagePath());
-            }
-
+            }  
+          product.setProductNumber(existingProduct.getProductNumber());
+            existingProduct.copyValuesFrom(product);
             // Update the product details in the database
-            productService.updateProduct(id, product);
+            productService.updateProduct(id, existingProduct);
             redirectAttributes.addFlashAttribute("success", "Product updated successfully.");
             return "redirect:/admin/products"; // Redirect to product list after success
 
@@ -162,33 +179,52 @@ public class AdminController {
 
  // Method to delete a product
     @GetMapping("/products/{id}")
-    public String deleteProduct(@PathVariable Integer id, Model model) {
-        Product product = productService.getProductById(id);
-        if (product != null) {
-            // Get the image path and delete the file
-            String imagePath = "src/main/resources/static/uploads/" + product.getImageName();
-            File imageFile = new File(imagePath);
-            if (imageFile.exists()) {
-                if (!imageFile.delete()) {
-                    model.addAttribute("error", "Failed to delete the image file.");
-                    return "error"; // Return error page if image deletion fails
-                }
-            }
+    public String deleteProduct(@PathVariable Long id, Model model) {
+    	try {
+	        Product product = productService.getProductById(id);
+	        if (product != null) {
+	            // Get the image path and delete the file
+	            String imagePath = "src/main/resources/static/uploads/" + product.getImageDetails().getName();
+	            File imageFile = new File(imagePath);
+	            if (imageFile.exists()) {
+	                if (!imageFile.delete()) {
+	                    model.addAttribute("error", "Failed to delete the image file.");
+	                    return "error"; // Return error page if image deletion fails
+	                }
+	            }
+	
+	            // Delete the product from the database
+	            productService.deleteProduct(id);
+	            return "redirect:/admin/products"; // Redirect to product list after deletion
+	        } else {
+	            model.addAttribute("error", "Error while deleting the Product, Please Try Again.");
+	            return "error"; // Return error page if product not found
+	        }
+    	}catch (DataIntegrityViolationException ex) {
+            // This exception is thrown when a foreign key constraint prevents deletion
+            ex.printStackTrace();
+            model.addAttribute("error", "Cannot delete this Product as it is associated with one or more User's Cart Items.");
+            return "error"; 
 
-            // Delete the product from the database
-            productService.deleteProduct(id);
-            return "redirect:/admin/products"; // Redirect to product list after deletion
-        } else {
-            model.addAttribute("error", "Error while deleting the Product, Please Try Again.");
-            return "error"; // Return error page if product not found
+        } catch (ConstraintViolationException ex) {
+            // Hibernate-specific constraint violation
+            ex.printStackTrace();
+            model.addAttribute("error", "Delete failed: This Product is linked to other records (foreign key constraint).");
+            return "error"; 
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "An unexpected error occurred while deleting the product: " + e.getMessage());
+            return "error"; 
         }
+        
     }
-
+    
 
     // Method to view a product
-    @GetMapping("/products/{category}/{id}")
-    public String viewProduct(@PathVariable String category, @PathVariable Integer id, Model model) {
-        Product product = productService.getProductByCategoryAndId(category, id);
+    @GetMapping("/products/{categoryId}/{id}")
+    public String viewProduct(@PathVariable Long categoryId, @PathVariable Long id, Model model) {
+        Product product = productService.getProductByCategoryAndId(categoryId, id);
         if (product != null) {
             model.addAttribute("product", product);
             return "viewProduct";
@@ -200,21 +236,18 @@ public class AdminController {
 
     // Method to populate categories for all requests
     @ModelAttribute("categories")
-    public List<String> populateCategories() {
-        return getCategories();
+    public List<ProductCategory> populateCategories() {
+        return productService.findAllProdCategory();
     }
 
-    // Private method to get the list of categories
-    private List<String> getCategories() {
-        return Arrays.asList("Laptop", "Headphone", "Mobile", "Electronics", "Toys", "Fashion");
-    }
 
     // Method to filter products by category
-    @GetMapping("/products/category/{categoryName}")
-    public String filterProductsByCategory(@PathVariable String categoryName, Model model) {
-        List<Product> products = productService.getProductsByCategory(categoryName);
+    @GetMapping("/products/category/{category_id}")
+    public String filterProductsByCategory(@PathVariable Long category_id, Model model) {
+        List<Product> products = productService.getProductsByCategory(category_id);
+        ProductCategory proCategory = productService.getProdCategoryById(category_id);
         model.addAttribute("products", products);
-        model.addAttribute("categoryName", categoryName);
+        model.addAttribute("categoryName", proCategory.getName());
         return "admin";
     }
 
@@ -229,6 +262,144 @@ public class AdminController {
             model.addAttribute("error", "Product not found.");
             return "error"; // Return error page if no products are found
         }
+    }
+
+    @GetMapping("/products/uploadProduct")
+    public String productUploadInput(Model model) {
+        model.addAttribute("product", new Product());
+        return "productUpload"; // Return the view name for adding a product
+    }
+
+    @RemoteMethod
+    public Map<String, Object> saveUploadedProductData(String fileName, String base64Data) throws Exception {
+        return productService.saveUploadedProductData(fileName,base64Data);
+    }
+    
+    @GetMapping("/products/productCategoryInput")
+    public ModelAndView getProductCategoryInput() {
+    	ModelAndView mv = new ModelAndView("addCategory");
+    	mv.addObject("prodCategory", new ProductCategory());
+    	return mv;
+    }
+    
+    @RemoteMethod
+    public Map<String,Object> saveProductCategory(Long categoryId,String categoryName,String desc,boolean isForEdit) {
+    	return productService.saveProdCategory(categoryId,categoryName,desc,isForEdit);
+    	
+    }
+    
+    @GetMapping("/products/brandInput")
+    public ModelAndView getBrandInput() {
+    	ModelAndView mv = new ModelAndView("addBrand");
+    	mv.addObject("prodSubCategory", productService.findAllProdSubCategory());
+    	mv.addObject("brand", new Brand());
+    	return mv;
+    }
+    
+    @RemoteMethod
+    public Map<String,Object> saveProdBrand(String brandName,String desc,List<Long> subCategoryList,boolean isForEdit) {
+    	return productService.saveProdBrand(brandName,desc,subCategoryList, isForEdit);
+    }
+    @RemoteMethod
+    public Map<String,Object> getSubCategoryBasedOnBrand(Long brandId) {
+    	return productService.getSubCategoryBasedOnBrand(brandId);
+    }
+    @RemoteMethod
+    public Map<String,Object> getCategoryBasedOnSubCategory(Long subCategoryId) {
+    	return productService.getCategoryBasedOnSubCategory(subCategoryId);
+    }
+    
+    @GetMapping("/products/subCategoryInput")
+    public ModelAndView getSubCategoryInput() {
+    	ModelAndView mv = new ModelAndView("subCategory");
+    	mv.addObject("prodCategory", productService.findAllProdCategory());
+    	mv.addObject("prodSubCategory", new ProductSubCategory());
+    	return mv;
+    }
+    
+    @RemoteMethod
+    public Map<String,Object> saveSubCategory(String subCategoryName,String desc,Long categoryId,boolean isForEdit) {
+    	return productService.saveSubCategory(subCategoryName,desc,categoryId,isForEdit);
+    }
+    
+    @GetMapping("/products/showAllProductCategories")
+    public ModelAndView showAllProdCategory(@RequestParam(required =false) String redirectMsg) {
+    	ModelAndView mv = new ModelAndView("allCategories");
+    	mv.addObject("redirectMsg", redirectMsg);
+    	mv.addObject("prodCategoryList", productService.findAllProdCategory());
+    	return mv;
+    }
+    
+    @GetMapping("/products/editProdCategoryInput/{categoryId}")
+    public ModelAndView getEditProdCategoryInput(@PathVariable Long categoryId) {
+    	ModelAndView mv = new ModelAndView("addCategory");
+    	ProductCategory category = productService.getProdCategoryById(categoryId);
+    	if (category != null) {
+    		mv.addObject("prodCategory", category);
+        } else {
+        	mv.addObject("error", "Product Category not found.");
+            return new ModelAndView("error"); // Return error page if no products are found
+        }
+    	return mv;
+    }
+    
+    @RemoteMethod
+    public Map<String,Object> deleteProdCategory(@PathVariable Long categoryId) {
+    	return productService.deleteProdCategory(categoryId);
+    }
+    
+    @GetMapping("/products/showAllProductSubCategories")
+    public ModelAndView showAllSubCategory(@RequestParam(required =false) String redirectMsg) {
+    	ModelAndView mv = new ModelAndView("allSubCategories");
+    	mv.addObject("redirectMsg", redirectMsg);
+    	mv.addObject("prodSubCategoryList", productService.findAllProdSubCategory());
+    	return mv;
+    }
+    
+    @GetMapping("/products/editProdSubCategoryInput/{subCategoryId}")
+    public ModelAndView getEditProdSubCategoryInput(@PathVariable Long subCategoryId) {
+    	ModelAndView mv = new ModelAndView("subCategory");
+    	ProductSubCategory subCategory = productService.getProdSubCategoryById(subCategoryId);
+    	if (subCategory != null) {
+    		mv.addObject("prodCategory", productService.findAllProdCategory());
+    		mv.addObject("prodSubCategory", subCategory);
+        } else {
+        	mv.addObject("error", "Product Sub Category not found.");
+            return new ModelAndView("error"); // Return error page if no products are found
+        }
+    	return mv;
+    }
+    
+    @RemoteMethod
+    public Map<String,Object> deleteProdSubCategory(@PathVariable Long subCategoryId) {
+    	return productService.deleteProdSubCategory(subCategoryId);
+    }
+    
+    @GetMapping("/products/showAllBrands")
+    public ModelAndView showAllBrands(@RequestParam(required =false) String redirectMsg) {
+    	ModelAndView mv = new ModelAndView("allBrands");
+    	mv.addObject("redirectMsg", redirectMsg);
+    	mv.addObject("prodBrandList", productService.findAllBrands());
+    	return mv;
+    }
+    
+    @GetMapping("/products/editBrandInput/{brandId}")
+    public ModelAndView getEditBrandInput(@PathVariable Long brandId) {
+    	ModelAndView mv = new ModelAndView("addBrand");
+    	Brand existbrand = productService.findBrandById(brandId);
+    	if (existbrand != null) {
+    		mv.addObject("prodSubCategory", productService.findAllProdSubCategory());
+    		mv.addObject("brand", existbrand);
+        } else {
+        	mv.addObject("error", "Product Sub Category not found.");
+            return new ModelAndView("error"); // Return error page if no products are found
+        }
+    	return mv;
+    }
+    
+    @RemoteMethod
+    public Map<String,Object> deleteBrand(@PathVariable Long brandId) {
+    	return productService.deleteBrand(brandId);
     }
 
     // Exception handler

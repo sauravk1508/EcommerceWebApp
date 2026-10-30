@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Admin - Add/Edit Product Category</title>
+    <script src="/dwr/engine.js"></script>
+    <script src="/dwr/util.js"></script>
+    <script src="/dwr/interface/adminController.js"></script>
+
+   <link rel="stylesheet" th:href="@{/css/addProduct.css}" />
+    
+</head>
+<body>
+<div th:insert="~{allcss.html}"></div>
+	<div class="container mt-5">
+        <h2 class="text-center" th:text="${prodCategory.id != null} ? 'Edit Product Category' : 'Add Product Category'"></h2>
+             <input type="hidden" id = "categoryId" th:field="*{prodCategory.id}" /> 
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="name" class="form-label">Name:</label>
+                    <input type="text" id ="categoryName" class="form-control" th:field="*{prodCategory.name}" placeholder="Category Name" required />
+                </div>
+                <div class="col-md-6">
+                    <label for="description" class="form-label">Description:</label>
+                    <input type="text" id = "categoryDesc" class="form-control" th:field="*{prodCategory.description}" placeholder="Add Category Description" required />
+                </div>
+            </div>
+            <div class="d-flex justify-content-center">
+               <button type="submit" th:onclick="'saveProductCategory(' + (${prodCategory.id} != null ? 'true' : 'false') + ')'" class="btn btn-primary">Save</button>
+            </div>
+    </div>
+</body>
+<script th:src="@{/js/productCategory.js}"></script>
+</html>

@@ -11,28 +11,33 @@
    
 </head>
 <body>
-    <div th:insert="~{navbar.html}"></div>
+
 
     <div class="container fade-in">
         <div class="row">
             <!-- Product Image Section -->
             <div class="col-md-6 col-sm-12 mb-4 text-center">
-               <img th:src="@{${product.imagePath}}" 
-                     alt="Product Image" class="card-img-top img-fluid" />
+               <img th:src="@{${product.imageDetails != null} ? ${product.imageDetails.path} : ''}"  alt="Product Image"  class="card-img-top img-fluid" />
             </div>
 
             <!-- Product Details Section -->
             <div class="col-md-6 col-sm-12 product-details">
                 <h3 th:text="${product.name}"></h3>
                 <p>Description: <strong th:text="${product.description}"></strong></p>
-                <p>Brand: <strong th:text="${product.brand}"></strong></p>
+                <p>Brand: <strong th:text="${product.brand.name}"></strong></p>
                 <p>Price: <strong th:text="${product.price}"></strong></p>
+                <p>Color: <strong th:text="${product.color}"></strong></p>
+                <p th:if="${product.size != null and product.size != ''}">
+				    Size: <strong th:text="${product.size}"></strong>
+				</p>
                 <p>Launch Date: <strong th:text="${product.releaseDate}"></strong></p>
-                <p>Category: <strong th:text="${product.category}"></strong></p>
+                <p>Sub-Category: <strong th:text="${product.subCategory.name}"></strong></p>
+                <p>Category: <strong th:text="${product.subCategory.productCategory.name}"></strong></p>
                 <p>Availability: <strong th:text="${product.available ? 'Available' : 'Out of Stock'}"></strong></p>
                 <p th:if="${product.available}">
                     Quantity in Stock: <strong th:text="${product.quantity}"></strong>
                 </p>
+                
 
                 <!-- Buy Button -->
                 <a href="#" class="btn btn-primary btn-lg mt-3">Buy Now</a>

@@ -12,36 +12,35 @@ import com.eCommerce.Entity.Users;
 import com.eCommerce.Repository.UserRepo;
 
 @Service
-public class UserService implements UserDetailsService, GenericService{
+public class UserService implements UserDetailsService, GenericService {
 	@Autowired
 	private UserRepo repo;
-	
-	private BCryptPasswordEncoder encoder=  new BCryptPasswordEncoder(12) ;
-	
+
+	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
 	public Users register(Users user) {
 		user.setPassword(encoder.encode(user.getPassword()));
 		return repo.save(user);
 	}
-	
-	 public UserService(UserRepo userRepository) {
-	        this.repo = userRepository;
-	    }
-	
+
+	public UserService(UserRepo userRepository) {
+		this.repo = userRepository;
+	}
+
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		
-		
+
 		Users user1 = repo.findByUsername(username);
-		
+
 		if (user1 == null) {
-            throw new UsernameNotFoundException("User not found with username: " + username);
-        }
+			throw new UsernameNotFoundException("User not found with username: " + username);
+		}
 		return new UserPrincipal(user1);
 	}
-	
-	  @Override
-	    public boolean usernameExists(String username) {  
-	        return repo.existsByUsernameExact(username);
-	    }
-	
+
+	@Override
+	public boolean usernameExists(String username) {
+		return repo.existsByUsernameExact(username);
+	}
+
 }

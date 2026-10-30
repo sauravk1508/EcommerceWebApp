@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import com.eCommerce.Entity.Users;
 import com.eCommerce.Service.UserService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Controller
 public class AuthController {
@@ -19,8 +19,6 @@ public class AuthController {
     @Autowired
     private UserService userService;
     
-    @Autowired
-    private PasswordEncoder passwordEncoder;
     
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
@@ -29,9 +27,7 @@ public class AuthController {
     }
     
     @PostMapping("/register")
-    public String register(@Validated @ModelAttribute Users user, 
-                         BindingResult result, 
-                         Model model) {
+    public String register(@Validated @ModelAttribute Users user,BindingResult result,Model model) {
         // Check if username already exists (case-sensitive)
         if (userService.usernameExists(user.getUsername())) {
             result.rejectValue("username", "error.username", "Username already exists");
@@ -44,7 +40,6 @@ public class AuthController {
         
         try {
             // Encode password before saving
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
             userService.register(user);
             return "redirect:/login?registered=true";
         } catch (Exception e) {

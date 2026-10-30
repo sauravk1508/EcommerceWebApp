@@ -19,7 +19,6 @@
 </head>
 
 <body>
-	<div th:insert="~{navbar.html}"></div>
 	<div class="container mt-5 p-3 rounded cart bg-light">
 		<div class="col-md-8 mx-auto">
 			<div class="product-details">
@@ -35,9 +34,7 @@
 					class="d-flex justify-content-between align-items-center mt-3 p-3 items rounded border shadow-sm bg-white">
 					<div class="d-flex flex-row cart-item">
 						<!-- Product Image -->
-						<img th:src="@{${item.product.imagePath}}" 
-                     alt="Product Image" class="card-img-top img-fluid" />
-
+						 <img th:src="@{${item.product.imageDetails != null} ? ${item.product.imageDetails.path} : ''}"  alt="Product Image" class="card-img-top img-fluid"/>
 
 						<!-- Product Name and Description -->
 						<div class="ml-2">

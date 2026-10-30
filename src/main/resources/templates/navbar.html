@@ -1,69 +1,171 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-secondary">
+<!-- <nav class="navbar navbar-expand-lg navbar-light bg-secondary" xmlns:th="http://www.w3.org/1999/xhtml">
 	<div class="container-fluid">
-		<a class="navbar-brand" th:href="@{/admin/products}"
-			style="font-weight: bold; color: white;">E-Commerce</a>
+		<a class="navbar-brand" th:href="@{/admin/products}" style="font-weight: bold; color: white;">E-Commerce</a>
 		
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
-			<!-- Left-aligned Links -->
+			Left-aligned Links
 			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-				<li class="nav-item"><a class="nav-link active"
-					aria-current="page" th:href="@{/admin/products}">Home</a></li>
-				<li class="nav-item"><a class="nav-link"
-					th:href="@{/admin/products/add}">Add Product</a></li>
+				<li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{/admin/products}">Home</a></li>
+				<li class="nav-item dropdown">
+				    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+				        Product
+				    </a>
+				    <ul class="dropdown-menu">
+				        <li><a class="dropdown-item nav-link" th:href="@{/admin/products/add}">Add Product</a></li>
+				        <li><a class="dropdown-item nav-link" th:href="@{/admin/products/uploadProduct}">Product Upload</a></li>
+				        
+				        Nested Dropdown
+				        <li class="dropend">
+				            <a class="dropdown-item dropdown-toggle nav-link" href="#" aria-expanded="false">Category</a>
+				            <ul class="dropdown-menu">
+				            	<li><a class="dropdown-item nav-link" th:href="@{/admin/products/showAllProductCategories}">All Categories</a></li>
+				            	<li><a class="dropdown-item nav-link" th:href="@{/admin/products/productCategoryInput}">Add Category</a></li>
+				            </ul>
+				        </li>
+				        <li class="dropend">
+				            <a class="dropdown-item dropdown-toggle nav-link" href="#" aria-expanded="false">Sub-Category</a>
+				            <ul class="dropdown-menu">
+				            	<li><a class="dropdown-item nav-link" th:href="@{/admin/products/showAllSubCategories}">All Sub-Categories</a></li>
+				                <li><a class="dropdown-item nav-link" th:href="@{/admin/products/subCategoryInput}">Add Sub-Category</a></li>
+				            </ul>
+				        </li>
+				        <li class="dropend">
+				            <a class="dropdown-item dropdown-toggle nav-link" href="#" aria-expanded="false">Brand</a>
+				            <ul class="dropdown-menu">
+				            	<li><a class="dropdown-item nav-link" th:href="@{/admin/products/showAllBrands}">All Brands</a></li>
+				                <li><a class="dropdown-item nav-link" th:href="@{/admin/products/brandInput}">Add Brand</a></li>
+				            </ul>
+				        </li>
+				    </ul>
+				</li>
 				<li class="nav-item dropdown"><a
 					class="nav-link dropdown-toggle" href="#" role="button"
 					data-bs-toggle="dropdown" aria-expanded="false"> Categories </a>
 					<ul class="dropdown-menu">
-						<li><a class="dropdown-item" th:href="@{/admin/products}">All</a>
+						<li><a class="dropdown-item nav-link" th:href="@{/admin/products}">All</a></li>
+						<li th:each="category : ${categories}">
+							<a class="dropdown-item nav-link" th:href="@{/admin/products/category/{categoryId}(categoryId=${category.id})}" th:text="${category.name}"></a>
 						</li>
-						<li th:each="category : ${categories}"><a
-							class="dropdown-item"
-							th:href="@{/admin/products/category/{categoryName}(categoryName=${category})}"
-							th:text="${category}"></a></li>
-					</ul></li>
+					</ul>
+				</li>
 			</ul>
-			<!-- Cart Icon (Outside the collapse div) -->
+			Cart Icon (Outside the collapse div)
 		<div class="cart-icon me-3">
-			<a class="nav-link" th:href="@{/cart/view}"> <img
-				th:src="@{/images/cart.png}" alt="Cart"
-				style="width: 30px; height: 30px;" />
+			<a class="nav-link" th:href="@{/cart/view}"> 
+				<img th:src="@{/images/cart.png}" alt="Cart" style="width: 30px; height: 30px;" />
 			</a>
 		</div>
 			
 		</div>
 
-		<!-- Centered Search Form (Outside the collapse div) -->
-		<form action="/admin/products/search" class="d-flex me-3"
-			role="search">
-			<input class="form-control me-2" type="search"
-				placeholder="Search products..." aria-label="Search" name="keyword">
+		Centered Search Form (Outside the collapse div)
+		<form action="/admin/products/search" class="d-flex me-3" role="search">
+			<input class="form-control me-2" type="search" placeholder="Search products..." aria-label="Search" name="keyword">
 			<button class="btn btn-outline-light" type="submit">Search</button>
 		</form>
 
 		
 
-		<!-- Right-aligned User Info and Logout Dropdown -->
+		Right-aligned User Info and Logout Dropdown
 		<div class="dropdown">
-			<button class="btn btn-info dropdown-toggle" type="button"
-				id="dropdownMenuButton" data-bs-toggle="dropdown"
-				aria-expanded="false">
+			<button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
 				<span th:text="${username}">User</span>
 			</button>
-			<ul class="dropdown-menu dropdown-menu-end"
-				aria-labelledby="dropdownMenuButton">
+			<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
 				<li><a class="dropdown-item" th:href="@{/logout}">Logout</a></li>
 			</ul>
 		</div>
-		<button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-			data-bs-target="#navbarSupportedContent"
-			aria-controls="navbarSupportedContent" aria-expanded="false"
-			aria-label="Toggle navigation">
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
+	</div>
+</nav> -->
+
+<nav class="navbar navbar-expand-lg navbar-light bg-secondary" xmlns:th="http://www.w3.org/1999/xhtml">
+	<div class="container-fluid">
+		<a class="navbar-brand" th:href="@{/admin/products}" style="font-weight: bold; color: white;">E-Commerce</a>
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<!-- Left-aligned Links -->
+			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+				<li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{/admin/products}">Home</a></li>
+				<li class="nav-item dropdown">
+				    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+				        Product
+				    </a>
+				    <ul class="dropdown-menu">
+				        <li><a class="dropdown-item nav-link" th:href="@{/admin/products/add}">Add Product</a></li>
+				        <li><a class="dropdown-item nav-link" th:href="@{/admin/products/uploadProduct}">Product Upload</a></li>
+				        
+				        <!-- Nested Dropdown - Category -->
+				        <li class="dropend">
+				            <a class="dropdown-item dropdown-toggle nav-link" href="#" aria-expanded="false">Category</a>
+				            <ul class="dropdown-menu">
+				            	<li><a class="dropdown-item nav-link" th:href="@{/admin/products/showAllProductCategories}">All Categories</a></li>
+				            	<li><a class="dropdown-item nav-link" th:href="@{/admin/products/productCategoryInput}">Add Category</a></li>
+				            </ul>
+				        </li>
+				        
+				        <!-- Nested Dropdown - Sub-Category -->
+				        <li class="dropend">
+				            <a class="dropdown-item dropdown-toggle nav-link" href="#" aria-expanded="false">Sub-Category</a>
+				            <ul class="dropdown-menu">
+				            	<li><a class="dropdown-item nav-link" th:href="@{/admin/products/showAllProductSubCategories}">All Sub-Categories</a></li>
+				                <li><a class="dropdown-item nav-link" th:href="@{/admin/products/subCategoryInput}">Add Sub-Category</a></li>
+				            </ul>
+				        </li>
+				        
+				        <!-- Nested Dropdown - Brand -->
+				        <li class="dropend">
+				            <a class="dropdown-item dropdown-toggle nav-link" href="#" aria-expanded="false">Brand</a>
+				            <ul class="dropdown-menu">
+				            	<li><a class="dropdown-item nav-link" th:href="@{/admin/products/showAllBrands}">All Brands</a></li>
+				                <li><a class="dropdown-item nav-link" th:href="@{/admin/products/brandInput}">Add Brand</a></li>
+				            </ul>
+				        </li>
+				    </ul>
+				</li>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categories</a>
+					<ul class="dropdown-menu">
+						<li><a class="dropdown-item nav-link" th:href="@{/admin/products}">All</a></li>
+						<li th:each="category : ${categories}">
+							<a class="dropdown-item nav-link" th:href="@{/admin/products/category/{categoryId}(categoryId=${category.id})}" th:text="${category.name}"></a>
+						</li>
+					</ul>
+				</li>
+			</ul>
+			<form action="/admin/products/search" class="d-flex me-3" role="search">
+				<input class="form-control me-2" type="search" placeholder="Search products..." aria-label="Search" name="keyword">
+				<button class="btn btn-outline-light" type="submit">Search</button>
+			</form>
+		</div>
+
+		<!-- Centered Search Form -->
+		
+
+		<!-- Cart Icon -->
+		
+
+		<!-- Right-aligned User Info and Logout Dropdown -->
+		<div class="dropdown last-Item">
+			<div class="cart-icon me-3">
+				<a class="nav-link" th:href="@{/cart/view}"> 
+					<img th:src="@{/images/cart.png}" alt="Cart" style="width: 30px; height: 30px;" />
+				</a>
+			</div>
+			<button class="btn btn-info dropdown-toggle me-2" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+				<span th:text="${username}">User</span>
+			</button>
+			<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+				<li><a class="dropdown-item" th:href="@{/logout}">Logout</a></li>
+			</ul>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+		</div>
+		
+	</div>
 </nav>
-
-
-
 <script>
 	// Change navbar background on scroll
 	window.addEventListener('scroll', function() {
@@ -74,4 +176,82 @@
 			navbar.classList.remove('scrolled');
 		}
 	});
+	document.addEventListener('DOMContentLoaded', function() {
+	    document.querySelectorAll('.dropend > .dropdown-toggle').forEach(function(toggle) {
+	        toggle.addEventListener('click', function(e) {
+	            e.preventDefault();
+	            e.stopPropagation();
+	            
+	            var menu = this.nextElementSibling;
+	            var isOpen = menu.classList.contains('show');
+	            
+	            // Close all nested dropdowns
+	            document.querySelectorAll('.dropend .dropdown-menu').forEach(function(m) {
+	                m.classList.remove('show');
+	            });
+	            
+	            // Toggle current one
+	            if (!isOpen) {
+	                menu.classList.add('show');
+	            }
+	        });
+	    });
+	});
 </script>
+<style>
+.dropend .dropdown-menu {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    margin-left: 0.125rem;
+}
+
+.dropend > .dropdown-toggle::after {
+    border-left: 0.3em solid;
+    border-right: 0;
+    border-bottom: 0.3em solid transparent;
+    border-top: 0.3em solid transparent;
+    vertical-align: 0;
+    margin-left: 0.5em;
+}
+
+@media (min-width: 992px) {
+    .navbar-collapse .dropend .dropdown-menu {
+        position: absolute;
+        top: 0;
+        left: 100%;
+        margin-left: 0.125rem;
+        margin-top: 0;
+    }
+
+    .navbar-collapse .dropend > .dropdown-toggle::after {
+        border-left: 0.3em solid;
+        border-right: 0;
+        border-bottom: 0.3em solid transparent;
+        border-top: 0.3em solid transparent;
+        vertical-align: 0;
+        margin-left: 0.5em;
+    }
+}
+
+/* Mobile/Tablet - Inner dropdowns open downward (when navbar is collapsed) */
+@media (max-width: 991px) {
+    .navbar-collapse .dropend .dropdown-menu {
+        position: static;
+        margin-left: 1.5rem;
+        margin-top: 0.25rem;
+    }
+
+    .navbar-collapse .dropend > .dropdown-toggle::after {
+        border-top: 0.3em solid;
+        border-right: 0.3em solid transparent;
+        border-bottom: 0;
+        border-left: 0.3em solid transparent;
+        vertical-align: 0;
+        margin-left: 0.5em;
+    }
+}
+.last-Item{
+display: flex;
+}
+</style>

@@ -52,7 +52,6 @@
 </style>
 </head>
 <body>
-	<div th:insert="~{navbar.html}"></div>
 <main class="container">
     <h2 th:text="${categoryName != null} ? ${categoryName} : 'Product List'"></h2>
     <div class="row d-flex justify-content-around">
@@ -60,8 +59,8 @@
         <div th:each="product : ${products}" class="col-12 col-sm-6 col-md-4 mb-4">
             <div class="card h-100">
                 <!-- Use the image path  -->
-                <img th:src="@{${product.imagePath}}" 
-                     alt="Product Image" class="card-img-top img-fluid" />
+                <img th:src="@{${product.imageDetails != null} ? ${product.imageDetails.path} : ''}"  alt="Product Image"  class="card-img-top img-fluid" />
+
                 <div class="card-body text-center">
                     <h5 class="card-title" th:text="${product.name}"></h5>
                     <p class="card-text" th:text="${product.description}"></p>
@@ -69,7 +68,7 @@
                     <p class="card-text" th:text="${product.available ? 'Available' : 'Out of Stock'}"></p>
                 </div>
                 <div class="card-body text-center">
-                    <a th:href="@{/admin/products/{category}/{id}(category=${product.category},id=${product.id})}"
+                    <a th:href="@{/admin/products/{categoryId}/{productId}(categoryId=${product.subCategory.productCategory.id},productId=${product.id})}"
                        class="btn btn-primary">View</a>
                     <a th:href="@{/admin/products/edit/{id}(id=${product.id})}"
                        class="btn btn-primary">Edit</a>
